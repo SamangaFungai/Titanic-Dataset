@@ -1,380 +1,199 @@
 # Titanic-Dataset
-# Teen Mental Health Prediction Using Machine Learning
+# Titanic Survival Prediction using Machine Learning
 
 ## Project Overview
 
-Mental health challenges among teenagers have become an increasing concern, particularly with the rise of social media usage, academic pressure, and lifestyle changes. Early identification of individuals at risk of depression can help provide timely support and intervention.
+This project explores the famous Titanic dataset and builds machine learning models to predict passenger survival.
 
-This project uses machine learning techniques to predict depression risk among teenagers based on demographic, behavioral, academic, and mental health-related factors.
+The project covers the complete machine learning workflow:
 
-The project demonstrates a complete machine learning workflow including:
+* Data Cleaning
+* Exploratory Data Analysis (EDA)
+* Feature Engineering
+* Data Preprocessing
+* Logistic Regression
+* Random Forest Classification
+* Model Evaluation and Interpretation
 
-- Exploratory Data Analysis (EDA)
-- Data preprocessing
-- Feature engineering
-- Handling imbalanced datasets
-- Model training and evaluation
-- Cross-validation
-- Model interpretation
+The goal of this project was not only to build a predictive model, but also to understand the reasoning behind each machine learning step.
 
----
 
-## Problem Statement
+# Dataset Information
 
-The goal of this project is to build a machine learning model capable of predicting whether a teenager is at risk of depression using factors such as:
+The dataset contains information about Titanic passengers such as:
 
-- Anxiety levels
-- Stress levels
-- Sleep duration
-- Social media usage
-- Academic performance
-- Physical activity
-- Social interaction
+* Passenger Class (`Pclass`)
+* Sex
+* Age
+* Fare
+* Family relationships (`sibsp`, `Parch`)
+* Embarkation Port (`Embarked`)
+* Survival Status (`survived`)
 
-Since mental health screening applications prioritize identifying at-risk individuals, the project focuses heavily on recall and F1-score rather than accuracy alone.
+Target Variable:
 
----
+ survived`
+[`0` ]= Did not survive
+[`1`] = Survived
 
-## Dataset Information
+# Project Workflow
 
-The dataset contains **1,200 records** representing teenagers and includes the following variables:
+## 1. Data Cleaning
 
-| Feature | Description |
-|----------|------------|
-| age | Age of the teenager |
-| gender | Gender |
-| daily_social_media_hours | Daily social media usage |
-| sleep_hours | Average sleep duration |
-| screen_time_before_sleep | Screen exposure before sleeping |
-| physical_activity | Physical activity level |
-| academic_performance | Academic performance score |
-| social_interaction_level | Level of social interaction |
-| stress_level | Stress score |
-| anxiety_level | Anxiety score |
-| addiction_level | Social media addiction level |
-| platform_usage | Preferred social media platform |
-| depression_label | Target variable |
+The dataset was cleaned by:
 
-### Target Variable
+* Removing unnecessary columns
+* Handling missing values
+* Fixing column naming issues
+* Encoding categorical variables
+* Preparing the data for machine learning
 
-| Value | Meaning |
-|---------|----------|
-| 0 | Not Depressed |
-| 1 | At Risk of Depression |
+### Key Cleaning Step
 
----
+Unnecessary (`zero.`) columns were removed because they contained no useful information and could negatively affect model performance.
 
-## Exploratory Data Analysis
+## 2. Exploratory Data Analysis (EDA)
 
-### Dataset Shape
+EDA was performed to understand patterns and relationships within the dataset.
 
-- Rows: 1200
-- Columns: 14
+### Important Findings
 
-### Missing Values
+* Female passengers had a higher survival rate than males.
+* First-class passengers had better survival chances.
+* Higher ticket fares were associated with higher survival probability.
+* Family structure appeared to influence survival.
 
-The dataset contained:
+### Visualizations Used
 
-```text
-0 missing values
-```
+* Bar plots
+* Histograms
+* Boxplots
+* Correlation heatmaps
 
-No imputation or row removal was required.
+These visualizations helped identify important patterns before building machine learning models.
 
-### Class Distribution
+## 3. Feature Engineering
 
-The dataset was highly imbalanced:
+Additional features were created to improve model performance.
 
-| Class | Count |
-|---------|---------:|
-| Not Depressed (0) | 1169 |
-| Depressed (1) | 31 |
+### Family Size Feature
 
-This imbalance made accuracy an unreliable evaluation metric.
+FamilySize = sibsp + Parch + 1
 
----
+This feature helped capture whether passengers were traveling alone or with family.
 
-## Data Preprocessing
+### IsAlone Feature
 
-### Categorical Encoding
+IsAlone = (FamilySize == 1)
 
-#### Gender
+This feature helped identify solo travelers.
 
-Binary encoding:
+# Machine Learning Models
 
-```text
-Male   → 1
-Female → 0
-```
+## Logistic Regression
 
-#### Social Interaction Level
+Logistic Regression was used as the baseline model because:
 
-Ordinal encoding:
+* It performs well on binary classification problems.
+* It is simple and interpretable.
+* It provides a strong starting point for comparison.
 
-```text
-Low    → 0
-Medium → 1
-High   → 2
-```
+### Initial Results
 
-#### Platform Usage
+* Accuracy: ~76.7%
 
-One-Hot Encoding:
+The model performed reasonably well but struggled to correctly identify survivors.
 
-```text
-Instagram
-TikTok
-Both
-```
+## Random Forest Classifier
 
-Converted into:
+A Random Forest model was later introduced to capture more complex relationships within the data.
 
-```text
-platform_usage_Instagram
-platform_usage_TikTok
-platform_usage_Both
-```
+### Why Random Forest?
 
----
+* Handles non-linear relationships better.
+* Reduces overfitting using multiple decision trees.
+* Often performs well on structured/tabular datasets.
 
-## Train-Test Split
-
-The dataset was split into:
-
-```text
-80% Training Data
-20% Testing Data
-```
-
-A stratified split was used to preserve class proportions across both sets.
-
-```python
-train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    stratify=y,
-    random_state=42
-)
-```
-
----
-
-## Feature Scaling
-
-Standardization was applied using StandardScaler:
-
-```python
-StandardScaler()
-```
-
-Scaling was performed only on the training set and then applied to the testing set to prevent data leakage.
-
----
-
-## Models Used
-
-### 1. Logistic Regression
-
-```python
-LogisticRegression(
-    class_weight='balanced'
-)
-```
-
-Class weighting was applied to address the severe class imbalance.
-
-### 2. Random Forest
-
-```python
+### Tuned Parameters
 RandomForestClassifier(
-    n_estimators=100,
+    n_estimators=200,
+    max_depth=5,
     class_weight='balanced',
     random_state=42
 )
-```
+# Model Evaluation
 
----
+The models were evaluated using:
 
-## Model Evaluation
+* Accuracy
+* Confusion Matrix
+* Precision
+* Recall
+* Classification Report
 
-### Logistic Regression Results
+## Important Insight
 
-#### Accuracy
+The project demonstrated that accuracy alone is not always the best metric.
 
-```text
-97.1%
-```
+After balancing the Random Forest model:
 
-#### Classification Report
+* Recall for survivors improved significantly.
+* More survivors were correctly identified.
+* Overall accuracy decreased slightly, showing the trade-off between precision and recall.
 
-| Metric | Class 1 |
-|----------|----------:|
-| Precision | 0.46 |
-| Recall | 1.00 |
-| F1-score | 0.63 |
+This reflects a real-world machine learning challenge where improving one metric can negatively affect another.
 
-#### Confusion Matrix
+# Final Results
 
-```text
-[[227   7]
- [  0   6]]
-```
+## Balanced Random Forest
 
-Interpretation:
+* Accuracy: 75%
+* Improved survivor recall
+* Better detection of positive cases
 
-- Correctly identified all 6 depression cases
-- Missed 0 depression cases
-- Generated 7 false alarms
-
----
-
-### Random Forest Results
-
-| Metric | Class 1 |
-|----------|----------:|
-| Precision | 1.00 |
-| Recall | 0.17 |
-| F1-score | 0.29 |
-
-Although Random Forest achieved slightly higher overall accuracy, it failed to identify most depression cases.
-
----
-
-## Model Comparison
-
-| Model | Accuracy | Recall (Class 1) | F1 Score |
-|---------|---------:|---------:|---------:|
-| Logistic Regression | 97.1% | 1.00 | 0.63 |
-| Random Forest | 98.0% | 0.17 | 0.29 |
-
-### Selected Model
-
-**Logistic Regression**
-
-Reason:
-
-The primary objective was identifying at-risk teenagers.
-
-Logistic Regression achieved:
+Confusion Matrix:
 
 ```text
-100% Recall
+[147  42]
+[ 21  52]
 ```
 
-meaning it successfully detected every depression case in the testing dataset.
+This model was preferred because it identified significantly more survivors compared to earlier models.
 
----
+# Technologies Used
 
-## Feature Importance Analysis
+* Python
+* Pandas
+* NumPy
+* Matplotlib
+* Seaborn
+* Scikit-learn
+* Jupyter Notebook
 
-The Logistic Regression model identified the following strongest predictors:
+# What I Learned
 
-### Positive Predictors of Depression Risk
+Through this project, I learned:
 
-| Feature | Coefficient |
-|----------|----------:|
-| anxiety_level | 2.98 |
-| stress_level | 2.43 |
-| daily_social_media_hours | 2.09 |
-| academic_performance | 0.59 |
-| addiction_level | 0.55 |
+* How to clean real-world datasets
+* The importance of EDA
+* Feature engineering techniques
+* How machine learning models make predictions
+* Model evaluation and interpretation
+* Trade-offs between accuracy, precision, and recall
+* The importance of understanding data rather than only training models
 
-### Protective Factors
+# Future Improvements
 
-| Feature | Coefficient |
-|----------|----------:|
-| sleep_hours | -3.39 |
-| gender | -0.85 |
-| platform_usage_Instagram | -0.35 |
+Possible future improvements include:
 
-### Key Findings
+* Hyperparameter tuning using GridSearchCV
+* Cross-validation
+* XGBoost implementation
+* Advanced feature engineering
+* Model deployment using Flask or Streamlit
 
-- Anxiety level was the strongest predictor of depression.
-- Stress level showed a strong positive relationship with depression risk.
-- Higher social media usage was associated with increased depression risk.
-- Sleep duration was the strongest protective factor.
+# Conclusion
 
----
+This project demonstrates a complete end-to-end machine learning workflow using the Titanic dataset.
 
-## Cross Validation
-
-To ensure that results were not dependent on a single train-test split, 5-fold cross-validation was performed.
-
-### Results
-
-```text
-F1 Scores:
-[0.50, 0.43, 0.42, 0.44, 0.43]
-```
-
-### Performance Summary
-
-| Metric | Value |
-|----------|----------:|
-| Mean F1 Score | 0.447 |
-| Standard Deviation | 0.028 |
-
-### Interpretation
-
-The relatively low standard deviation indicates that model performance was stable across multiple folds.
-
----
-
-## Technologies Used
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Scikit-Learn
-- Jupyter Notebook
-
----
-
-## Project Structure
-
-```text
-Teen-Mental-Health-Prediction/
-│
-├── data/
-│   └── Teen_Mental_Health_Dataset.csv
-│
-├── notebooks/
-│   └── mental_health_prediction.ipynb
-│
-├── images/
-│   ├── confusion_matrix.png
-│   └── feature_importance.png
-│
-├── README.md
-│
-├── requirements.txt
-│
-└── .gitignore
-```
-
----
-
-## Future Improvements
-
-Potential enhancements include:
-
-- SMOTE oversampling for minority class balancing
-- Hyperparameter tuning using GridSearchCV
-- XGBoost implementation
-- Deployment using Flask or Streamlit
-- Real-time prediction interface
-
----
-
-## Conclusion
-
-This project demonstrates a complete end-to-end machine learning workflow for predicting depression risk among teenagers.
-
-Despite the dataset's severe class imbalance, Logistic Regression achieved perfect recall on the minority class and successfully identified all depression cases in the testing dataset.
-
-The analysis revealed that anxiety levels, stress levels, and social media usage were the strongest predictors of depression risk, while sleep duration acted as the strongest protective factor.
-
-The project highlights the importance of evaluating models using recall and F1-score rather than relying solely on accuracy when working with imbalanced datasets.
-
+The focus of the project was not only achieving good model performance, but also understanding the reasoning behind every step in the machine learning process.
